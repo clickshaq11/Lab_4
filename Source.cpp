@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS // для fopen, оно ругается
+#define _CRT_SECURE_NO_WARNINGS // РґР»СЏ fopen, РѕРЅРѕ СЂСѓРіР°РµС‚СЃСЏ
 #include <string>
 #include <cctype>
 #include <fstream>
@@ -13,18 +13,18 @@ std::string functionString(const std::string& Source);
 char* functionC(char* destination, const char* source, const int size);
 
 int main() {
-	// Открытие файла 
+	// РћС‚РєСЂС‹С‚РёРµ С„Р°Р№Р»Р° 
 	std::ifstream fin;
 	std::string path = "test.txt";
 	fin.open(path);
-	if (fin.is_open()) { // проверка открытия
+	if (fin.is_open()) { // РїСЂРѕРІРµСЂРєР° РѕС‚РєСЂС‹С‚РёСЏ
 		std::cout << "read success" << "\n";
 	}
 	else {
 		std::cout << "read failure" << "\n";
 		return -1;
 	}
-	// считывание строки 
+	// СЃС‡РёС‚С‹РІР°РЅРёРµ СЃС‚СЂРѕРєРё 
 	std::string namesize; 
 	std::string name;
 	std::getline(fin, namesize);
@@ -34,10 +34,10 @@ int main() {
 	std::string s = functionString(name);
 	fin.close();
 	//
-	std::ofstream fout; // запись в файл
+	std::ofstream fout; // Р·Р°РїРёСЃСЊ РІ С„Р°Р№Р»
 	std::string path2 = "test2.txt";
-	fout.open(path2); // fout.open(path2, std::fstream::app) - Для записи без удаления информации из файла
-	if (fout.is_open()) { // проверка открытия
+	fout.open(path2); // fout.open(path2, std::fstream::app) - Р”Р»СЏ Р·Р°РїРёСЃРё Р±РµР· СѓРґР°Р»РµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё РёР· С„Р°Р№Р»Р°
+	if (fout.is_open()) { // РїСЂРѕРІРµСЂРєР° РѕС‚РєСЂС‹С‚РёСЏ
 		std::cout << "read success" << "\n";
 	}
 	else {
@@ -45,7 +45,7 @@ int main() {
 		return -1;
 	}
 	fout << s << std::endl; 
-	// c-style строки
+	// c-style Г±ГІГ°Г®ГЄГЁ
 	std::ifstream fin2;
 	std::string path3 = "test.txt";
 	fin2.open(path3);
@@ -126,6 +126,6 @@ char* functionC(char* destination, const char* source, const int size) {
 		destination2[i] = destination[i];
 	}
 	destination2[size2 + 1] = '\0';
-	char * ptr = destination2; //создаем и возвращаем указатель
+	char * ptr = destination2; //СЃРѕР·РґР°РµРј Рё РІРѕР·РІСЂР°С‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ
 	return ptr;
 }
