@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS // для fopen, оно ругается
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <string>
 #include <cctype>
 #include <fstream>
@@ -12,60 +12,100 @@ std::string functionString(const std::string& Source);
 
 char* functionC(char* destination, const char* source, const int size);
 
+std::ifstream openToRead(std::string path);
+
+void openToWrite(std::string path, std::string string);
+void openToWrite(std::string path, char* array);
+
+std::string execString(std::ifstream& file);
+
+void execC(std::ifstream& file);
+
+void isValid(std::string toValidate);
+
 int main() {
-	// Открытие файла 
-	std::ifstream fin;
-	std::string path = "test.txt";
-	fin.open(path);
-	if (fin.is_open()) { // проверка открытия
-		std::cout << "read success" << "\n";
+	std::ifstream fin = openToRead("test.txt");
+	std::string s = execString(fin);
+	openToWrite("test2.txt", s);
+	// c-style строки
+	std::ifstream fin2 = openToRead("test.txt");
+	execC(fin2);
+	return 0;
+}
+
+std::ifstream openToRead(std::string path) {
+	std::ifstream file;
+	file.open(path);
+	if (file.is_open()) { // проверка открытия
+		return file;
 	}
 	else {
-		std::cout << "read failure" << "\n";
-		return -1;
+		std::cerr << "read failure" << "\n";
+		exit(1);
 	}
-	// считывание строки 
-	std::string namesize; 
+}
+
+void openToWrite(std::string path, std::string string) {
+	std::ofstream file;
+	file.open(path);
+	if (file.is_open()) { // проверка открытия
+		file << string << std::endl;
+	}
+	else {
+		std::cerr << "write failure" << "\n";
+		exit(1);
+	}
+	file.close();
+}
+
+void openToWrite(std::string path, char* array) {
+	std::ofstream file;
+	file.open(path, std::fstream::app);
+	if (file.is_open()) { // проверка открытия
+		file << array;
+	}
+	else {
+		std::cerr << "write failure" << "\n";
+		exit(1);
+	}
+	file.close();
+}
+
+std::string execString(std::ifstream& file) {
+	std::string namesize;
 	std::string name;
-	std::getline(fin, namesize);
-	std::getline(fin, name);
+	std::getline(file, namesize);
+	isValid(namesize);
+	std::getline(file, name);
+	
 	int nameSizeNumbered = atoi(namesize.c_str());
+	if (name.size() != nameSizeNumbered) {
+		std::cerr << "Ошибка размеров" << std::endl;
+		exit(1);
+	}
 	std::cout << std::endl;
 	std::string s = functionString(name);
-	fin.close();
-	//
-	std::ofstream fout; // запись в файл
-	std::string path2 = "test2.txt";
-	fout.open(path2); // fout.open(path2, std::fstream::app) - Для записи без удаления информации из файла
-	if (fout.is_open()) { // проверка открытия
-		std::cout << "read success" << "\n";
-	}
-	else {
-		std::cout << "read failure" << "\n";
-		return -1;
-	}
-	fout << s << std::endl; 
-	// c-style ñòðîêè
-	std::ifstream fin2;
-	std::string path3 = "test.txt";
-	fin2.open(path3);
+	file.close();
+	return s;
+}
+
+void execC(std::ifstream& file) {
+	std::string namesize;
+	std::getline(file, namesize);
+	int nameSizeNumbered = atoi(namesize.c_str());
 	char* dest = new char[nameSizeNumbered];
-	std::string a_;
-	std::getline(fin2, a_);
 	char c;
 	for (int i = 0; i < nameSizeNumbered; i++) {
-		fin2 >> c;
+		file >> c;
 		dest[i] = c;
 	}
 	char* src = new char[nameSizeNumbered];
-	std::ofstream fout2;
-	fout2.open(path2, std::fstream::app);
-	fout2 << functionC(src, dest, nameSizeNumbered);
-	fout2.close();
+	char* dest2 = functionC(src, dest, nameSizeNumbered);
+	openToWrite("test2.txt", dest2);
 	delete[] dest;
 	delete[] src;
-	return 0;
 }
+
 
 std::string functionString(const std::string& Source) {
 	std::vector<char> curSym;
@@ -120,7 +160,6 @@ char* functionC(char* destination, const char* source, const int size) {
 		destination[k] = curSym[k];
 	}
 	static int size2 = curSym.size();
-	std::cout << curSym.size() << std::endl;
 	char* destination2 = new char[size2+1];
 	for (int i = 0; i < size2; i++) {
 		destination2[i] = destination[i];
@@ -128,4 +167,15 @@ char* functionC(char* destination, const char* source, const int size) {
 	destination2[size2 + 1] = '\0';
 	char * ptr = destination2; //создаем и возвращаем указатель
 	return ptr;
+}
+
+void isValid(std::string toValidate) {
+	for (int i = 0; i < toValidate.size(); i++) {
+		char c;
+		c = toValidate[i];
+		if (!(c > '0' || c < '9')) {
+			throw "Неверный формат длины строки";
+			exit(1);
+		}
+	}
 }
